@@ -1,0 +1,22 @@
+.visual-editor-card {
+  margin-left: 1%;
+  height: 85vh;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+}
+
+.radio-button {
+  margin: 5px;
+}
+
+#container {
+  border-style: solid;
+  border-width: thin;
+  height: 65vh;
+  width: 100%;
+  overflow: hidden;
+}

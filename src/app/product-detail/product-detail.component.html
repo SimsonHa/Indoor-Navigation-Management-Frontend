@@ -1,0 +1,31 @@
+<div class="wrapper">
+  <h2>Product Editor</h2>
+  <form class="input-form" (ngSubmit)="onSubmit(product)" [ngFormOptions]="{updateOn: 'submit'}">
+    <mat-form-field>
+      <input [(ngModel)]="product.id" matInput placeholder="Id" name="id" disabled>
+    </mat-form-field><br>
+    <mat-form-field>
+      <input [(ngModel)]="product.name" matInput placeholder="Name" name="name">
+    </mat-form-field><br>
+    <mat-form-field>
+      <input [(ngModel)]="product.price" matInput placeholder="Price" name="price">
+    </mat-form-field><br>
+    <mat-form-field>
+      <input [(ngModel)]="product.artNr" matInput placeholder="Article Number:" name="artNr">
+    </mat-form-field><br>
+    <mat-form-field>
+      <input [(ngModel)]="product.category" matInput placeholder="Category" name="category">
+    </mat-form-field><br>
+    <mat-form-field>
+      <mat-label>Label</mat-label>
+      <mat-select>
+        <!-- <mat-option *ngFor="let food of foods" [value]="food.value">
+      {{food.viewValue}}</mat-option> -->
+      </mat-select>
+    </mat-form-field>
+    <div class="button-group">
+      <button mat-button color="warn" (click)="close()">Close</button>
+      <button mat-button type="submit" role="confirm">Save</button>
+    </div>
+  </form>
+</div>

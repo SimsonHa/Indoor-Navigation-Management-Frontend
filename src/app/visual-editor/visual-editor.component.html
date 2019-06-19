@@ -1,0 +1,16 @@
+<mat-card class="visual-editor-card">
+  <mat-card-header>
+    <mat-card-title>Visual Editor</mat-card-title>
+    <!-- <mat-card-subtitle>Interactive waypoint & label placement</mat-card-subtitle> -->
+    <br>
+  </mat-card-header>
+  <label id="radio-group-label">Select editor mode: </label>
+  <mat-radio-group aria-labelledby="radio-group-label" class="radio-group" [(ngModel)]="selectedMode" (change)="onModeChange(event)">
+    <mat-radio-button class="radio-button" *ngFor="let mode of modes" [value]="mode">
+      {{ mode }}
+    </mat-radio-button>
+  </mat-radio-group>
+  <mat-card-content class="mat-card-content">
+    <div id="container"></div>
+  </mat-card-content>
+</mat-card>

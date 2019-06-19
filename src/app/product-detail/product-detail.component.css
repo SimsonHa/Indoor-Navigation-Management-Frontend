@@ -1,0 +1,13 @@
+.wrapper {
+  font-family: Roboto;
+  display: flex;
+  flex-direction: column;
+  width: 70vh;
+  align-items: center;
+  padding-left: 5vh;
+  padding-right: 5vh;
+}
+
+.input-form > * {
+  width: 60vh;
+}
