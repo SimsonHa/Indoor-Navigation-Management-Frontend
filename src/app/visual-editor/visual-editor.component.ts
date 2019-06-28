@@ -3,6 +3,7 @@ import { Canvas } from './visual.canvas';
 import { ProductService } from '../product.service';
 import { LabelService } from '../label.service';
 import { Label } from '../entities/label';
+import { Transform } from 'konva/types/Util';
 // import Canvas from 'konva';
 
 
@@ -13,12 +14,23 @@ import { Label } from '../entities/label';
 })
 export class VisualEditorComponent implements OnInit {
 
-  canvas : Canvas;
+  canvas: Canvas;
   selectedMode: string;
-  modes: string[] = ["Waypoint", "Path", "Label"];
-  activeLabel : Label | null;
+  modes: string[] = ["Waypoint", "Path", "Inspector"];
 
-  constructor(private productService : ProductService, private labelService : LabelService) {}
+  activeLabel: Label | null;
+
+  stageX: number = 0;
+  stageY: number = 0;
+
+  stageTransformedX: number = 0;
+  stageTransformedY: number = 0;
+
+  stageZoom: number = 0;
+
+  transform : number[] = null;
+
+  constructor(private productService: ProductService, private labelService: LabelService) { }
 
   ngOnInit(): void {
     // upload picture here
@@ -32,7 +44,7 @@ export class VisualEditorComponent implements OnInit {
     }
   }
 
-  getSelectedMode() : String {
+  getSelectedMode(): String {
     return this.selectedMode;
   }
 
@@ -40,11 +52,32 @@ export class VisualEditorComponent implements OnInit {
     this.canvas.onModeChange();
   }
 
-  setActiveLabel(label : Label) {
+  setActiveLabel(label: Label) {
     this.activeLabel = label;
   }
 
   removeActiveLabel() {
     this.activeLabel = null;
+  }
+
+  setStageX(stageX: number) {
+    this.stageX = stageX;
+  }
+  setStageY(stageY: number) {
+    this.stageY = stageY;
+  }
+  setStageTransformedX(stageTransformedX: number) {
+    this.stageTransformedX = stageTransformedX;
+  }
+  setStageTransformedY(stageTransformedY: number) {
+    this.stageTransformedY = stageTransformedY;
+  }
+  setZoomScale(stageZoom: number) {
+    this.stageZoom = stageZoom;
+  }
+
+  setTrans(transform: Transform) {
+    this.transform = transform.getMatrix();
+    console.log(transform);
   }
 }

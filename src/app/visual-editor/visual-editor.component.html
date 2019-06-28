@@ -18,18 +18,38 @@
       <br><br>
       <div *ngIf="activeLabel">
         <label>Product: {{ activeLabel.getProduct().getName() }}</label><br>
-        <label>Category: </label><br>
-        <label>Label Mac: {{ activeLabel.getMac() }}</label><br>
+        <!-- <label>Category: </label><br>
+        <label>Label Mac: {{ activeLabel.getMac() }}</label><br> -->
+        <label>Label Saved X: {{ activeLabel.getX() }}</label><br>
+        <label>Label Saved Y: {{ activeLabel.getY() }}</label><br>
+        <label>Transform:
+        <div *ngIf="transform">
+          [
+          <div *ngFor="let number of activeLabel.getTransform().getMatrix()">
+            {{ number }},
+          </div>
+          ]
+        </div>
+        </label>
       </div>
     </div>
-    <div fxFlex="25%">
+    <div fxFlex="50%">
       <label id="radio-group-label">Transform/Mouse Info: </label>
       <br><br>
-      <!-- <label>Mouse Stage X: {{ canvas.stageX }}</label><br>
-      <label>Mouse Stage Y: {{ canvas.stageY }} </label><br>
-      <label>Stage Transformed X: {{ canvas.stageTransformedX }}</label><br>
-      <label>Stage Transformed Y: {{ canvas.stageTransformedY }}</label><br>
-      <label>Zoom: {{ canvas.stageZoom }}</label><br> -->
+      <label>Mouse Stage X: {{ stageX }}</label><br>
+      <label>Mouse Stage Y: {{ stageY }} </label><br>
+      <label>Stage Transformed X: {{ stageTransformedX }}</label><br>
+      <label>Stage Transformed Y: {{ stageTransformedY }}</label><br>
+      <label>Zoom: {{ stageZoom }}</label><br>
+      <label>Transform:
+      <div *ngIf="transform">
+        [
+        <div *ngFor="let number of transform">
+          {{ number }},
+        </div>
+        ]
+      </div>
+      </label>
     </div>
   </div>
   <mat-card-content class="mat-card-content">

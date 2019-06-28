@@ -28,13 +28,7 @@ export class Canvas {
 
   standardTransform : Transform;
 
-  stageX : number = 0;
-  stageY : number = 0;
 
-  stageTransformedX : number = 0;
-  stageTransformedY : number = 0;
-
-  stageZoom : number = 0;
 
   constructor(img: HTMLImageElement, private component: VisualEditorComponent, private labelService: LabelService, private productService: ProductService, private visualEditor: VisualEditorComponent) {
 
@@ -103,15 +97,19 @@ export class Canvas {
       console.log("Subscribe content: " + labels.length);
 
       let rect = new Konva.Rect({
-        x: this.transform({x: label.getX(),y: 0}).x,
-        y: this.transform({x: 0, y: label.getY()}).y,
-        width: 7,
+        // x: this.transform({x: label.getX(),y: 0}).x,
+        // y: this.transform({x: 0, y: label.getY()}).y,
+        x: this.transform({x: label.getX() + label.getTransform().getMatrix()[4] + this.stage.getTransform().getMatrix()[4], y: 0}).x,
+        y: this.transform({x: 0, y: label.getY() + label.getTransform().getMatrix()[5] + this.stage.getTransform().getMatrix()[5]}).y,
         height: 5,
+        width: 10,
         fill: 'blue',
         stroke: 'black',
         strokeWidth: 1,
         draggable: true
       });
+
+      rect._setTransform(this.stage.getTransform().copy());
 
       rect.on("mouseenter", e => this.visualEditor.setActiveLabel(label));
       rect.on("mouseleave", e => this.visualEditor.removeActiveLabel());
@@ -129,10 +127,10 @@ export class Canvas {
       //update pointer pos + label position to dragpoint
       console.log("Label: " + label);
 
-
       this.stage.setPointersPositions(e);
-      label.setX(this.transform(null).x);
-      label.setY(this.transform(null).y);
+      label.setTransform(this.stage.getAbsoluteTransform().copy());
+      label.setX(this.transform(null).x - label.getTransform().getMatrix()[4]);
+      label.setY(this.transform(null).y - label.getTransform().getMatrix()[5]);
 
       // connect dropped product + label
       label.setProduct(this.productService.getDraggedLast());
@@ -144,7 +142,7 @@ export class Canvas {
   }
 
   onStageClick(event: KonvaEventObject<"click">) {
-    // click multiplexer
+    //click multiplexer
     //waypoint mode
     if (this.component.getSelectedMode() == "Waypoint") {
       console.log("Waypoint added");
@@ -154,8 +152,14 @@ export class Canvas {
     }
 
     //label mode
-    if (this.component.getSelectedMode() == "Label") {
+    if (this.component.getSelectedMode() == "Inspector") {
+      this.component.setStageX(this.stage.getPointerPosition().x);
+      this.component.setStageY(this.stage.getPointerPosition().y);
 
+      this.component.setStageTransformedX(this.transform(null).x);
+      this.component.setStageTransformedY(this.transform(null).y);
+
+      this.component.setTrans(this.stage.getTransform());
     }
   }
 
@@ -177,7 +181,7 @@ export class Canvas {
       y: newScale
     });
 
-    this.stageZoom = newScale;
+    this.component.setZoomScale(newScale);
 
     let newPos = {
       x:
@@ -189,18 +193,10 @@ export class Canvas {
     };
     this.stage.position(newPos);
     this.stage.batchDraw();
+    this.component.setTrans(this.stage.getTransform());
   }
 
   onMouseMove(event: KonvaEventObject<"mousemove">): void {
-
-    // console.log("Moving");
-
-    // this.stageX = this.stage.getPointerPosition().x;
-    // this.stageY = this.stage.getPointerPosition().y;
-    //
-    // this.stageTransformedX = this.transform(null).x;
-    // this.stageTransformedY = this.transform(null).y;
-
     //in path mode, show preview lineCap
     if (this.component.getSelectedMode() === "Path") {
       if (this.lastSelected) {
@@ -256,6 +252,5 @@ export class Canvas {
   onModeChange() {
     this.drawPathes();
     this.lastSelected = null;
-
   }
 }

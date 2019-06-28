@@ -1,4 +1,5 @@
 import { Product } from './product';
+import { Transform } from 'konva/types/Util';
 
 export class Label {
   id: number;
@@ -6,6 +7,7 @@ export class Label {
   x: number;
   y: number;
   product: Product = null;
+  transform : Transform = null;
 
   static labelCount = 0;
 
@@ -47,5 +49,13 @@ export class Label {
 
   getProduct(): Product {
     return this.product;
+  }
+
+  setTransform(transform : Transform) {
+    this.transform = transform;
+  }
+
+  getTransform() : Transform {
+    return this.transform;
   }
 }
