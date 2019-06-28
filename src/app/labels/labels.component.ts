@@ -31,10 +31,5 @@ export class LabelsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       this.getLabels();
     });
-
-  }
-
-  drop(event) {
-    console.log(event)
   }
 }

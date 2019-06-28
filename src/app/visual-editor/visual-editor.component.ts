@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Canvas } from './visual.canvas';
-import {CdkDragDrop } from '@angular/cdk/drag-drop';
+import { ProductService } from '../product.service';
+import { LabelService } from '../label.service';
+import { Label } from '../entities/label';
 // import Canvas from 'konva';
 
 
@@ -14,6 +16,9 @@ export class VisualEditorComponent implements OnInit {
   canvas : Canvas;
   selectedMode: string;
   modes: string[] = ["Waypoint", "Path", "Label"];
+  activeLabel : Label | null;
+
+  constructor(private productService : ProductService, private labelService : LabelService) {}
 
   ngOnInit(): void {
     // upload picture here
@@ -23,7 +28,7 @@ export class VisualEditorComponent implements OnInit {
 
     img.src = '../assets/test.JPG';
     img.onload = () => {
-      this.canvas = new Canvas(img, this);
+      this.canvas = new Canvas(img, this, this.labelService, this.productService, this);
     }
   }
 
@@ -35,4 +40,11 @@ export class VisualEditorComponent implements OnInit {
     this.canvas.onModeChange();
   }
 
+  setActiveLabel(label : Label) {
+    this.activeLabel = label;
+  }
+
+  removeActiveLabel() {
+    this.activeLabel = null;
+  }
 }

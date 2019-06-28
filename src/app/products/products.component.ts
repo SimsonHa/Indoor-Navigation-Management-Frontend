@@ -32,4 +32,20 @@ export class ProductsComponent implements OnInit {
       this.getProducts();
     });
   }
+
+  drag(event : DragEvent, product : Product) {
+    // console.log("Drag in product.component.ts w/o data --------------------------------")
+    // console.log(event);
+    // event.dataTransfer.dropEffect = "link";
+    // event.dataTransfer.setData("any", "label.id.toString()");
+    // console.log("Drag in product.component.ts w/ data --------------------------------")
+    // console.log(event);
+    this.productService.setDraggedLast(product);
+  }
+
+  drop(event : DragEvent) {
+    // console.log("Drop in product.component.ts --------------------------------")
+    // console.log(event)
+
+  }
 }

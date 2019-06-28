@@ -1,5 +1,5 @@
 <mat-list>
-  <mat-list-item style="cursor: pointer" *ngFor="let product of products" (click)="openDialog(product)">
+  <mat-list-item style="cursor: pointer" *ngFor="let product of products" (click)="openDialog(product)" draggable="true" (dragstart)="drag($event, product)">
       <h4 mat-line><b>{{product.name}}</b> ({{product.category}}) | <em>{{product.id}}</em></h4>
       <p mat-line> Preis: {{product.price | currency}}, ArtNr: {{product.artNr}} </p>
     <mat-divider></mat-divider>

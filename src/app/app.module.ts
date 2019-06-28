@@ -13,7 +13,7 @@ import { MaterialModule } from './material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
 import {MatRadioModule} from '@angular/material/radio';
-import {DragDropModule} from '@angular/cdk/drag-drop';
+import { LabelService } from './label.service';
 // import { Konva } from './konva';
 
 @NgModule({
@@ -32,10 +32,11 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     MaterialModule,
     FlexLayoutModule,
     FormsModule,
-    MatRadioModule,
-    DragDropModule
+    MatRadioModule
   ],
-  providers: [],
+  providers: [
+    LabelService
+  ],
   bootstrap: [AppComponent],
   entryComponents: [ProductDetailComponent, LabelDetailComponent]
 })

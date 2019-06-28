@@ -4,12 +4,25 @@
     <!-- <mat-card-subtitle>Interactive waypoint & label placement</mat-card-subtitle> -->
     <br>
   </mat-card-header>
-  <label id="radio-group-label">Select editor mode: </label>
-  <mat-radio-group aria-labelledby="radio-group-label" class="radio-group" [(ngModel)]="selectedMode" (change)="onModeChange(event)">
-    <mat-radio-button class="radio-button" *ngFor="let mode of modes" [value]="mode">
-      {{ mode }}
-    </mat-radio-button>
-  </mat-radio-group>
+  <div class="bar" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-betwwen">
+    <div fxFlex="25%">
+      <label id="radio-group-label">Select editor mode: </label>
+      <mat-radio-group aria-labelledby="radio-group-label" class="radio-group" [(ngModel)]="selectedMode" (change)="onModeChange(event)">
+        <mat-radio-button class="radio-button" *ngFor="let mode of modes" [value]="mode">
+          {{ mode }}
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <div fxFlex="25%">
+      <label id="radio-group-label">Label Info: </label>
+      <br><br>
+      <div *ngIf="activeLabel">
+        <label>Product: {{ activeLabel.getProduct().getName() }}</label><br>
+        <label>Category: </label><br>
+        <label>Label Mac: {{ activeLabel.getMac() }}</label><br>
+      </div>
+    </div>
+  </div>
   <mat-card-content class="mat-card-content">
     <div id="container"></div>
   </mat-card-content>

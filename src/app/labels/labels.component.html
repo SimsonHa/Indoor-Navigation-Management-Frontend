@@ -1,6 +1,7 @@
-<div cdkDropList id="labelList" class="example-list" >
-  <div class="example-box" *ngFor="let label of labels" draggable="true">
+<div id="labelList" class="example-list">
+  <div class="example-box" *ngFor="let label of labels">
     <h4 mat-line><b>Label {{label.id}}</b> | <em>{{label.mac}}</em></h4>
+    <button type="button" name="button">Prio</button>
     <p mat-line> (X, Y) : ({{label.x}}, {{label.y}})</p>
   </div>
 </div>

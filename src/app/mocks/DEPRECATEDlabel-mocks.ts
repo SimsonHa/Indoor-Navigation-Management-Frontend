@@ -1,0 +1,26 @@
+// import { Label } from '../entities/label';
+//
+// export const LABELS: Label[] = [
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+//   new Label("00:80:41:ae:fd:7e", 10, 20, false),
+// ];

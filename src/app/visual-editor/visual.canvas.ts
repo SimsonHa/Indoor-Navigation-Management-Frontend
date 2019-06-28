@@ -1,8 +1,10 @@
 import Konva from 'konva';
 import { Waypoint } from './visual.waypoint'
 import { KonvaEventObject } from 'konva/types/Node';
-import { Point } from 'konva/types/Util';
 import { VisualEditorComponent } from './visual-editor.component';
+import { LabelService } from '../label.service';
+import { ProductService } from '../product.service';
+import { Point, Transform } from 'konva/types/Util';
 
 export class Canvas {
 
@@ -24,7 +26,10 @@ export class Canvas {
   //others
   lastSelected: Waypoint | null;
 
-  constructor(img: HTMLImageElement, private component: VisualEditorComponent) {
+  standardTransform : Transform;
+
+  constructor(img: HTMLImageElement, private component: VisualEditorComponent, private labelService: LabelService, private productService: ProductService, private visualEditor: VisualEditorComponent) {
+
     //stage
     this.stage = new Konva.Stage({
       container: 'container',
@@ -33,9 +38,14 @@ export class Canvas {
       draggable: true
     });
 
+    this.standardTransform = this.stage.getAbsoluteTransform().copy().invert();
+
+
+
     this.stage.on("click", event => this.onStageClick(event));
     this.stage.on("wheel", event => this.onStageZoom(event));
     this.stage.on("mousemove", event => this.onMouseMove(event));
+
     //bg image
     let bgImage = new Konva.Image({
       x: 0,
@@ -64,30 +74,69 @@ export class Canvas {
     this.stage.draw();
 
     var con = this.stage.container();
+
     con.addEventListener('dragover', e => {
       e.preventDefault(); // !important
     });
 
-    con.addEventListener('drop', e => {
+    con.addEventListener('drop', (e) => {
       e.preventDefault();
-      console.log(e);
-      // now we need to find pointer position
-      // we can't use stage.getPointerPosition() here, because that event
-      // is not registered by Konva.Stage
-      // we can register it manually:
-      this.stage.setPointersPositions(e);
-      this.lblLayer.add(new Konva.Rect({
-        x: this.transform(null).x,
-        y: this.transform(null).y,
+      this.onDrop(e);
+      this.updateLabels();
+    });
+
+    //test
+    console.log(this.labelService);
+    console.log(this.productService);
+  }
+
+  // rerenders all labeles connetected to a product
+  updateLabels() {
+    this.lblLayer.removeChildren();
+
+    //transform does not work atm maybe safe scale factor with it.. idk yet
+
+
+    this.labelService.getConnectedLabels().subscribe(labels => labels.forEach(label => {
+      let rect = new Konva.Rect({
+        x: this.transform({ x: label.getX(), y: 0 }).x * this.stage.scaleX(),
+        y: this.transform({ x: 0, y: label.getY() }).y * this.stage.scaleY(),
         width: 7,
         height: 5,
         fill: 'blue',
         stroke: 'black',
         strokeWidth: 1,
         draggable: true
-      }))
-      this.lblLayer.draw();
-    });
+      })
+      rect.on("mouseenter", e => this.visualEditor.setActiveLabel(label));
+      rect.on("mouseleave", e => this.visualEditor.removeActiveLabel());
+      this.lblLayer.add(rect);
+    }));
+
+    this.lblLayer.draw();
+  }
+
+  onDrop(e) {
+    console.log(e);
+    //first: get available label
+    this.labelService.getPrioLabel().subscribe(label => {
+      //update pointer pos + label position to dragpoint
+      console.log("Label: " + label);
+
+
+      this.stage.setPointersPositions(e);
+      // label.setX(this.stage.getPointerPosition().x);
+      // label.setY(this.stage.getPointerPosition().y);
+      label.setX(this.standardTransformer(null).x);
+      label.setY(this.standardTransformer(null).y);
+
+      // connect dropped product + label
+      label.setProduct(this.productService.getDraggedLast());
+      this.productService.getDraggedLast().setLabel(label);
+      //save to backend
+      this.productService.saveProduct(this.productService.getDraggedLast());
+      this.labelService.saveLabel(label);
+    }); //implement exceptions/error (e.g. "no labels available here")
   }
 
   onStageClick(event: KonvaEventObject<"click">) {
@@ -152,13 +201,25 @@ export class Canvas {
   }
 
   //null parameter returns current pointer pos
+  //(transform relative coordinates changed by zoom etc)
   transform(pos: Point): Point {
     let transform = this.stage.getAbsoluteTransform().copy().invert();
+
+    console.log(transform);
     if (pos) {
       return transform.point(pos);
     } else {
       pos = this.stage.getPointerPosition();
       return transform.point(pos);
+    }
+  }
+
+  standardTransformer(pos : Point) : Point {
+    if(pos) {
+      return this.standardTransform.point(pos);
+    } else {
+      pos = this.stage.getPointerPosition();
+      return this.standardTransform.point(pos);
     }
   }
 
