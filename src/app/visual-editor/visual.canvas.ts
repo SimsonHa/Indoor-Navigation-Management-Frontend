@@ -96,13 +96,15 @@ export class Canvas {
 
   // rerenders all labeles connetected to a product
   updateLabels() {
-    //this.lblLayer.removeChildren();
+    this.lblLayer.removeChildren();
 
     this.labelService.getConnectedLabels().subscribe(labels => labels.forEach(label => {
       console.log("Label for " + label.getProduct().getName() + " added");
+      console.log("Subscribe content: " + labels.length);
+
       let rect = new Konva.Rect({
-        x: this.transform(null).x,
-        y: this.transform(null).y,
+        x: this.transform({x: label.getX(),y: 0}).x,
+        y: this.transform({x: 0, y: label.getY()}).y,
         width: 7,
         height: 5,
         fill: 'blue',
