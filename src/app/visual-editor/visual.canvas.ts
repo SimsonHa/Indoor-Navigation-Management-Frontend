@@ -28,6 +28,14 @@ export class Canvas {
 
   standardTransform : Transform;
 
+  stageX : number = 0;
+  stageY : number = 0;
+
+  stageTransformedX : number = 0;
+  stageTransformedY : number = 0;
+
+  stageZoom : number = 0;
+
   constructor(img: HTMLImageElement, private component: VisualEditorComponent, private labelService: LabelService, private productService: ProductService, private visualEditor: VisualEditorComponent) {
 
     //stage
@@ -37,10 +45,6 @@ export class Canvas {
       height: img.height,
       draggable: true
     });
-
-    this.standardTransform = this.stage.getAbsoluteTransform().copy().invert();
-
-
 
     this.stage.on("click", event => this.onStageClick(event));
     this.stage.on("wheel", event => this.onStageZoom(event));
@@ -92,24 +96,24 @@ export class Canvas {
 
   // rerenders all labeles connetected to a product
   updateLabels() {
-    this.lblLayer.removeChildren();
-
-    //transform does not work atm maybe safe scale factor with it.. idk yet
-
+    //this.lblLayer.removeChildren();
 
     this.labelService.getConnectedLabels().subscribe(labels => labels.forEach(label => {
+      console.log("Label for " + label.getProduct().getName() + " added");
       let rect = new Konva.Rect({
-        x: this.transform({ x: label.getX(), y: 0 }).x * this.stage.scaleX(),
-        y: this.transform({ x: 0, y: label.getY() }).y * this.stage.scaleY(),
+        x: this.transform(null).x,
+        y: this.transform(null).y,
         width: 7,
         height: 5,
         fill: 'blue',
         stroke: 'black',
         strokeWidth: 1,
         draggable: true
-      })
+      });
+
       rect.on("mouseenter", e => this.visualEditor.setActiveLabel(label));
       rect.on("mouseleave", e => this.visualEditor.removeActiveLabel());
+
       this.lblLayer.add(rect);
     }));
 
@@ -125,10 +129,8 @@ export class Canvas {
 
 
       this.stage.setPointersPositions(e);
-      // label.setX(this.stage.getPointerPosition().x);
-      // label.setY(this.stage.getPointerPosition().y);
-      label.setX(this.standardTransformer(null).x);
-      label.setY(this.standardTransformer(null).y);
+      label.setX(this.transform(null).x);
+      label.setY(this.transform(null).y);
 
       // connect dropped product + label
       label.setProduct(this.productService.getDraggedLast());
@@ -143,6 +145,7 @@ export class Canvas {
     // click multiplexer
     //waypoint mode
     if (this.component.getSelectedMode() == "Waypoint") {
+      console.log("Waypoint added");
       this.waypoints.push(new Waypoint(this.transform(null).x, this.transform(null).y, this.component, this));
       this.wpLayer.add(this.waypoints[this.waypoints.length - 1].getShape());
       this.wpLayer.draw();
@@ -172,6 +175,8 @@ export class Canvas {
       y: newScale
     });
 
+    this.stageZoom = newScale;
+
     let newPos = {
       x:
         -(mousePointTo.x - this.stage.getPointerPosition().x / newScale) *
@@ -185,6 +190,15 @@ export class Canvas {
   }
 
   onMouseMove(event: KonvaEventObject<"mousemove">): void {
+
+    // console.log("Moving");
+
+    // this.stageX = this.stage.getPointerPosition().x;
+    // this.stageY = this.stage.getPointerPosition().y;
+    //
+    // this.stageTransformedX = this.transform(null).x;
+    // this.stageTransformedY = this.transform(null).y;
+
     //in path mode, show preview lineCap
     if (this.component.getSelectedMode() === "Path") {
       if (this.lastSelected) {
@@ -205,21 +219,11 @@ export class Canvas {
   transform(pos: Point): Point {
     let transform = this.stage.getAbsoluteTransform().copy().invert();
 
-    console.log(transform);
     if (pos) {
       return transform.point(pos);
     } else {
       pos = this.stage.getPointerPosition();
       return transform.point(pos);
-    }
-  }
-
-  standardTransformer(pos : Point) : Point {
-    if(pos) {
-      return this.standardTransform.point(pos);
-    } else {
-      pos = this.stage.getPointerPosition();
-      return this.standardTransform.point(pos);
     }
   }
 
