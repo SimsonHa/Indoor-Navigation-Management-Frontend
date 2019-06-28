@@ -33,4 +33,8 @@ export class Product {
   getLabel() : Label {
     return this.label;
   }
+
+  getCategory() : String {
+    return this.category;
+  }
 }

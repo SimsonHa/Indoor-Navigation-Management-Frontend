@@ -6,7 +6,7 @@
   </mat-card-header>
   <div class="bar" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-betwwen">
     <div fxFlex="25%">
-      <label id="radio-group-label">Select editor mode: </label>
+      <label id="radio-group-label">Editor mode: </label>
       <mat-radio-group aria-labelledby="radio-group-label" class="radio-group" [(ngModel)]="selectedMode" (change)="onModeChange(event)">
         <mat-radio-button class="radio-button" *ngFor="let mode of modes" [value]="mode">
           {{ mode }}
@@ -14,15 +14,15 @@
       </mat-radio-group>
     </div>
     <div fxFlex="25%">
+      <div *ngIf="activeLabel">
       <label id="radio-group-label">Label Info: </label>
       <br><br>
-      <div *ngIf="activeLabel">
         <label>Product: {{ activeLabel.getProduct().getName() }}</label><br>
-        <!-- <label>Category: </label><br>
-        <label>Label Mac: {{ activeLabel.getMac() }}</label><br> -->
-        <label>Label Saved X: {{ activeLabel.getX() }}</label><br>
-        <label>Label Saved Y: {{ activeLabel.getY() }}</label><br>
-        <label>Transform:
+        <label>Category: {{ activeLabel.getProduct().getCategory() }}</label><br>
+        <label>Label Mac: {{ activeLabel.getMac() }}</label><br>
+        <!-- <label>Label Saved X: {{ activeLabel.getX() }}</label><br>
+        <label>Label Saved Y: {{ activeLabel.getY() }}</label><br> -->
+        <!-- <label>Transform:
         <div *ngIf="transform">
           [
           <div *ngFor="let number of activeLabel.getTransform().getMatrix()">
@@ -30,18 +30,20 @@
           </div>
           ]
         </div>
-        </label>
+        </label> -->
       </div>
     </div>
+
     <div fxFlex="50%">
-      <label id="radio-group-label">Transform/Mouse Info: </label>
-      <br><br>
-      <label>Mouse Stage X: {{ stageX }}</label><br>
-      <label>Mouse Stage Y: {{ stageY }} </label><br>
-      <label>Stage Transformed X: {{ stageTransformedX }}</label><br>
-      <label>Stage Transformed Y: {{ stageTransformedY }}</label><br>
-      <label>Zoom: {{ stageZoom }}</label><br>
-      <label>Transform:
+      <div *ngIf="selectedMode == 'Inspector'">
+        <label id="radio-group-label">Transform/Mouse Info: </label>
+        <br><br>
+        <label>Mouse Stage X: {{ stageX }}</label><br>
+        <label>Mouse Stage Y: {{ stageY }} </label><br>
+        <label>Stage Transformed X: {{ stageTransformedX }}</label><br>
+        <label>Stage Transformed Y: {{ stageTransformedY }}</label><br>
+        <label>Zoom: {{ stageZoom }}</label><br>
+        <!-- <label>Transform:
       <div *ngIf="transform">
         [
         <div *ngFor="let number of transform">
@@ -49,7 +51,8 @@
         </div>
         ]
       </div>
-      </label>
+      </label> -->
+      </div>
     </div>
   </div>
   <mat-card-content class="mat-card-content">

@@ -15,7 +15,7 @@ import { Transform } from 'konva/types/Util';
 export class VisualEditorComponent implements OnInit {
 
   canvas: Canvas;
-  selectedMode: string;
+  selectedMode: string = "Waypoint";
   modes: string[] = ["Waypoint", "Path", "Inspector"];
 
   activeLabel: Label | null;
@@ -78,6 +78,5 @@ export class VisualEditorComponent implements OnInit {
 
   setTrans(transform: Transform) {
     this.transform = transform.getMatrix();
-    console.log(transform);
   }
 }

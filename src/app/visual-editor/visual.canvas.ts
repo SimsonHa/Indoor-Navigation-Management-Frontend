@@ -28,6 +28,7 @@ export class Canvas {
 
   standardTransform : Transform;
 
+  private newScale : number = 1;
 
 
   constructor(img: HTMLImageElement, private component: VisualEditorComponent, private labelService: LabelService, private productService: ProductService, private visualEditor: VisualEditorComponent) {
@@ -97,10 +98,8 @@ export class Canvas {
       console.log("Subscribe content: " + labels.length);
 
       let rect = new Konva.Rect({
-        // x: this.transform({x: label.getX(),y: 0}).x,
-        // y: this.transform({x: 0, y: label.getY()}).y,
-        x: this.transform({x: label.getX() + label.getTransform().getMatrix()[4] + this.stage.getTransform().getMatrix()[4], y: 0}).x,
-        y: this.transform({x: 0, y: label.getY() + label.getTransform().getMatrix()[5] + this.stage.getTransform().getMatrix()[5]}).y,
+        x: this.transform({x: label.getX()  + this.stage.getTransform().getMatrix()[4], y: 0}).x * this.newScale,
+        y: this.transform({x: 0, y: label.getY()  + this.stage.getTransform().getMatrix()[5]}).y * this.newScale,
         height: 5,
         width: 10,
         fill: 'blue',
@@ -109,10 +108,14 @@ export class Canvas {
         draggable: true
       });
 
-      rect._setTransform(this.stage.getTransform().copy());
-
       rect.on("mouseenter", e => this.visualEditor.setActiveLabel(label));
       rect.on("mouseleave", e => this.visualEditor.removeActiveLabel());
+
+      //update label position on dragging
+      rect.on("dragend", e => {
+        label.setX(rect.getPosition().x);
+        label.setY(rect.getPosition().y);
+      });
 
       this.lblLayer.add(rect);
     }));
@@ -129,8 +132,8 @@ export class Canvas {
 
       this.stage.setPointersPositions(e);
       label.setTransform(this.stage.getAbsoluteTransform().copy());
-      label.setX(this.transform(null).x - label.getTransform().getMatrix()[4]);
-      label.setY(this.transform(null).y - label.getTransform().getMatrix()[5]);
+      label.setX(this.transform(null).x );
+      label.setY(this.transform(null).y );
 
       // connect dropped product + label
       label.setProduct(this.productService.getDraggedLast());
@@ -174,22 +177,31 @@ export class Canvas {
       y: this.stage.getPointerPosition().y / oldScale - this.stage.y() / oldScale
     };
 
-    let newScale =
-      e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+    this.newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+    //limit zoom to reasonable values
+    if(this.newScale < 0.1) {
+      this.newScale = 0.1;
+    }
+
+    if(this.newScale > 30) {
+      this.newScale = 30;
+    }
+
     this.stage.scale({
-      x: newScale,
-      y: newScale
+      x: this.newScale,
+      y: this.newScale
     });
 
-    this.component.setZoomScale(newScale);
+    this.component.setZoomScale(this.newScale);
 
     let newPos = {
       x:
-        -(mousePointTo.x - this.stage.getPointerPosition().x / newScale) *
-        newScale,
+        -(mousePointTo.x - this.stage.getPointerPosition().x / this.newScale) *
+        this.newScale,
       y:
-        -(mousePointTo.y - this.stage.getPointerPosition().y / newScale) *
-        newScale
+        -(mousePointTo.y - this.stage.getPointerPosition().y / this.newScale) *
+        this.newScale
     };
     this.stage.position(newPos);
     this.stage.batchDraw();
