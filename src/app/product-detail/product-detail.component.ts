@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, Input } from '@angular/core';
-import {MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Product } from '../entities/product';
 import { ProductService } from '../product.service';
 
@@ -10,29 +10,30 @@ import { ProductService } from '../product.service';
 })
 export class ProductDetailComponent implements OnInit {
 
-  @Input() product : Product;
-  productService : ProductService;
+  @Input() product: Product;
+  productService: ProductService;
 
   constructor(
     public dialogRef: MatDialogRef<ProductDetailComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any[]) {
-      this.product = data[0];
-      this.productService = data[1];
-    }
-
+    this.product = data[0];
+    this.productService = data[1];
+  }
 
   ngOnInit(): void {
     console.log("Seleceted Product: " + this.product.name);
   }
 
-  onSubmit(product : Product) : void {
+  onSubmit(product: Product): void {
     console.log("Submitted" + product);
     this.productService.saveProduct(product);
   }
 
-  close() : void {
-    alert("Changes will not be saved");
+  close(warn: boolean): void {
+
+    if (warn) {
+      alert("Changes will not be saved");
+    }
     this.dialogRef.close();
   }
-
 }

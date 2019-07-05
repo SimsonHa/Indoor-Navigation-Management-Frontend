@@ -2,10 +2,10 @@
   font-family: Roboto;
   display: flex;
   flex-direction: column;
-  width: 70vh;
+  width: 62vh;
   align-items: center;
-  padding-left: 5vh;
-  padding-right: 5vh;
+  padding-left: 1vh;
+  padding-right: 1vh;
 }
 
 .input-form > * {

@@ -11,16 +11,20 @@ import { ProductDetailComponent } from '../product-detail/product-detail.compone
 })
 export class ProductsComponent implements OnInit {
 
-  products: Product[];
-
   constructor(private productService: ProductService, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.getProducts()
+
   }
 
   getProducts(): void {
-    this.productService.getProducts().subscribe(products => this.products = products);
+    this.productService.getProducts();
+  }
+
+  newProduct() : void {
+    let product : Product = new Product(Product.generateId(), "", 0.00, "", "");
+    this.openDialog(product);
   }
 
   openDialog(product: Product): void {
@@ -34,18 +38,10 @@ export class ProductsComponent implements OnInit {
   }
 
   drag(event : DragEvent, product : Product) {
-    // console.log("Drag in product.component.ts w/o data --------------------------------")
-    // console.log(event);
-    // event.dataTransfer.dropEffect = "link";
-    // event.dataTransfer.setData("any", "label.id.toString()");
-    // console.log("Drag in product.component.ts w/ data --------------------------------")
-    // console.log(event);
     this.productService.setDraggedLast(product);
   }
 
   drop(event : DragEvent) {
-    // console.log("Drop in product.component.ts --------------------------------")
-    // console.log(event)
 
   }
 }

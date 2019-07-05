@@ -20,10 +20,10 @@ menu
     <mat-card class="form-card">
       <mat-card-content>
         <mat-tab-group mat-align-tabs="center" mat-stretch-tabs>
-          <mat-tab class="tab1" label="Product">
+          <mat-tab class="tab1" label="Products">
             <app-products></app-products>
           </mat-tab>
-          <mat-tab label="Label">
+          <mat-tab label="Labels ({{ labelService.availableLabels }})">
             <app-labels></app-labels>
           </mat-tab>
         </mat-tab-group>
@@ -33,7 +33,6 @@ menu
         <button mat-button>SHARE</button>
       </mat-card-actions> -->
     </mat-card>
-
   </div>
 </div>
 

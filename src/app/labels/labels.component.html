@@ -1,22 +1,13 @@
-<div id="labelList" class="example-list">
-  <div class="example-box" *ngFor="let label of labels">
-    <h4 mat-line><b>Label {{label.id}}</b> | <em>{{label.mac}}</em></h4>
-    <button type="button" name="button">Prio</button>
-    <p mat-line> (X, Y) : ({{label.x}}, {{label.y}})</p>
+<div id="labelList" class="label-list">
+  <div class="label-box" *ngFor="let label of labelService.labels">
+    <h4 mat-line><b>Label {{label.id}}</b> | <em>{{label.macAdres}}</em></h4>
+    <p mat-line> (X, Y) : ({{label.posX}}, {{label.posY}})</p>
   </div>
 </div>
-
-<!-- <div cdkDropList id="labelList" class="example-list" (cdkDropListDropped)="drop($event)" [cdkDropListConnectedTo]="visualEditor">
-  <div class="example-box" *ngFor="let label of labels" cdkDrag [cdkDragData]="label">
-    <h4 mat-line><b>Label {{label.id}}</b> | <em>{{label.mac}}</em></h4>
-    <p mat-line> (X, Y) : ({{label.x}}, {{label.y}})</p>
+Verbundene Label:
+<div id="labelList" class="label-list">
+  <div class="label-box" *ngFor="let label of labelService.esls">
+    <h4 mat-line><b>Label {{label.id}}</b> | <em>{{label.macAdres}}</em></h4>
+    <p mat-line> (X, Y) : ({{label.posX}}, {{label.posY}})</p>
   </div>
-</div> -->
-
-<!-- <mat-list>
-  <mat-list-item style="cursor: pointer" *ngFor="let label of labels" (click)="openDialog(label)" cdkDrag>
-      <h4 mat-line><b>Label {{label.id}}</b> | <em>{{label.mac}}</em></h4>
-      <p mat-line> (X, Y) : ({{label.x}}, {{label.y}})</p>
-      <mat-divider></mat-divider>
-  </mat-list-item>
-</mat-list> -->
+</div>

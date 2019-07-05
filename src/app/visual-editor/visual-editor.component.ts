@@ -4,6 +4,7 @@ import { ProductService } from '../product.service';
 import { LabelService } from '../label.service';
 import { Label } from '../entities/label';
 import { Transform } from 'konva/types/Util';
+import { WaypointService } from '../waypoint.service';
 // import Canvas from 'konva';
 
 
@@ -28,9 +29,9 @@ export class VisualEditorComponent implements OnInit {
 
   stageZoom: number = 0;
 
-  transform : number[] = null;
+  transform: number[] = null;
 
-  constructor(private productService: ProductService, private labelService: LabelService) { }
+  constructor(private productService: ProductService, private labelService: LabelService, private waypointService: WaypointService) { }
 
   ngOnInit(): void {
     // upload picture here
@@ -40,7 +41,11 @@ export class VisualEditorComponent implements OnInit {
 
     img.src = '../assets/test.JPG';
     img.onload = () => {
-      this.canvas = new Canvas(img, this, this.labelService, this.productService, this);
+      this.canvas = new Canvas(img, this, this.labelService, this.productService, this, this.waypointService);
+      this.labelService.setCanvas(this.canvas);
+      this.waypointService.setCanvas(this.canvas);
+      this.labelService.getLabels();
+      this.waypointService.reloadWaypoints();
     }
   }
 
@@ -78,5 +83,9 @@ export class VisualEditorComponent implements OnInit {
 
   setTrans(transform: Transform) {
     this.transform = transform.getMatrix();
+  }
+
+  saveWaypoints() {
+    this.waypointService.saveWaypoints();
   }
 }

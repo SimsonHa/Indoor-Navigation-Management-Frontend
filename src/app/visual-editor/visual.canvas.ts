@@ -5,6 +5,7 @@ import { VisualEditorComponent } from './visual-editor.component';
 import { LabelService } from '../label.service';
 import { ProductService } from '../product.service';
 import { Point, Transform } from 'konva/types/Util';
+import { WaypointService } from '../waypoint.service';
 
 export class Canvas {
 
@@ -19,25 +20,25 @@ export class Canvas {
   liveLayer: Konva.Layer; // live previews
 
   //canvas elements (wp, lbl, pathes)
-  waypoints: Waypoint[] = [];
-  labels: Konva.Rect[] = [];
+  // waypoints: Waypoint[] = [];
+  // labels: Konva.Rect[] = [];
   pathes: Konva.Line[] = [];
 
   //others
   lastSelected: Waypoint | null;
 
-  standardTransform : Transform;
+  standardTransform: Transform;
 
-  private newScale : number = 1;
+  private newScale: number = 1;
 
 
-  constructor(img: HTMLImageElement, private component: VisualEditorComponent, private labelService: LabelService, private productService: ProductService, private visualEditor: VisualEditorComponent) {
+  constructor(img: HTMLImageElement, private component: VisualEditorComponent, private labelService: LabelService, private productService: ProductService, private visualEditor: VisualEditorComponent, private waypointService: WaypointService) {
 
     //stage
     this.stage = new Konva.Stage({
       container: 'container',
       width: img.width,
-      height: img.height,
+      height: img.height + 500,
       draggable: true
     });
 
@@ -85,21 +86,22 @@ export class Canvas {
     });
 
     //test
-    console.log(this.labelService);
-    console.log(this.productService);
+    // console.log(this.labelService);
+    // console.log(this.productService);
+
+
+
   }
 
   // rerenders all labeles connetected to a product
   updateLabels() {
     this.lblLayer.removeChildren();
 
-    this.labelService.getConnectedLabels().subscribe(labels => labels.forEach(label => {
-      console.log("Label for " + label.getProduct().getName() + " added");
-      console.log("Subscribe content: " + labels.length);
+    this.labelService.esls.forEach(label => {
 
       let rect = new Konva.Rect({
-        x: this.transform({x: label.getX()  + this.stage.getTransform().getMatrix()[4], y: 0}).x * this.newScale,
-        y: this.transform({x: 0, y: label.getY()  + this.stage.getTransform().getMatrix()[5]}).y * this.newScale,
+        x: this.transform({ x: label.getX() + this.stage.getTransform().getMatrix()[4], y: 0 }).x * this.newScale,
+        y: this.transform({ x: 0, y: label.getY() + this.stage.getTransform().getMatrix()[5] }).y * this.newScale,
         height: 5,
         width: 10,
         fill: 'blue',
@@ -110,17 +112,16 @@ export class Canvas {
 
       rect.on("mouseenter", e => this.visualEditor.setActiveLabel(label));
       rect.on("mouseleave", e => this.visualEditor.removeActiveLabel());
-
-      //update label position on dragging
       rect.on("dragend", e => {
+        //update label position on dragging
         label.setX(rect.getPosition().x);
         label.setY(rect.getPosition().y);
       });
 
       this.lblLayer.add(rect);
-    }));
 
-    this.lblLayer.draw();
+      this.lblLayer.draw();
+    });
   }
 
   onDrop(e) {
@@ -128,20 +129,84 @@ export class Canvas {
     //first: get available label
     this.labelService.getPrioLabel().subscribe(label => {
       //update pointer pos + label position to dragpoint
-      console.log("Label: " + label);
+      if (label) {
+        console.log("Dropped Label: ");
+        console.log(label);
 
-      this.stage.setPointersPositions(e);
-      label.setTransform(this.stage.getAbsoluteTransform().copy());
-      label.setX(this.transform(null).x );
-      label.setY(this.transform(null).y );
+        this.stage.setPointersPositions(e);
+        //label.setTransform(this.stage.getAbsoluteTransform().copy());
+        label.setX(this.transform(null).x);
+        label.setY(this.transform(null).y);
 
-      // connect dropped product + label
-      label.setProduct(this.productService.getDraggedLast());
-      this.productService.getDraggedLast().setLabel(label);
-      //save to backend
-      this.productService.saveProduct(this.productService.getDraggedLast());
-      this.labelService.saveLabel(label);
+        // connect dropped product + label
+        label.setProduct(this.productService.getDraggedLast());
+        // this.productService.getDraggedLast().setLabel(label);
+        //save to backend
+        //this.productService.saveProduct(this.productService.getDraggedLast());
+        this.labelService.saveLabel(label);
+
+      } else {
+        alert("Keine Labels verfügbar");
+      }
     }); //implement exceptions/error (e.g. "no labels available here")
+  }
+
+  updateWaypoints() {
+    this.wpLayer.removeChildren();
+    this.waypointService.getWaypoints().forEach(waypoint => {
+      let shape = new Konva.Circle({
+        x: this.transform({ x: waypoint.getX() + this.stage.getTransform().getMatrix()[4], y: 0 }).x * this.newScale,
+        y: this.transform({ x: 0, y: waypoint.getY() + this.stage.getTransform().getMatrix()[5] }).y * this.newScale,
+        radius: 4,
+        fill: waypoint.status === "anfang" ? "green" : waypoint.status === "ende" ? "black" : "red",
+        stroke: "black",
+        strokeWidth: 1,
+        draggable: true
+      });
+
+      this.wpLayer.add(shape);
+
+      shape.on("click", e => {
+        console.log("shape clicked");
+        e.cancelBubble = true;
+        if (this.component.getSelectedMode() == "Path") { //path mode
+          if (this.getLastSelected()) { //there is a predecessor selected
+            if (this.getLastSelected().id != waypoint.id) { // not itself
+              if (!waypoint.connectedTo.includes(this.getLastSelected())) { //not already connected
+                waypoint.connectedTo.push(this.getLastSelected());
+                this.getLastSelected().addConnection(waypoint);
+                console.log("Connected ID: " + waypoint.id + " with ID " + this.getLastSelected().id);
+              }
+            }
+          }
+          this.setLastSelected(waypoint);
+          this.drawPathes();
+        }
+      });
+      //
+      shape.on("dragmove", e => {
+        waypoint.setX(this.transform(null).x);
+        waypoint.setY(this.transform(null).y);
+        this.drawPathes();
+      });
+      //
+      shape.on("mouseenter", e => {
+        shape.size({
+          width: 16,
+          height: 16
+        })
+        this.wpLayer.draw();
+      });
+      //
+      shape.on("mouseout", e => {
+        shape.size({
+          width: 8,
+          height: 8
+        });
+        this.wpLayer.draw();
+      });
+    });
+    this.wpLayer.draw();
   }
 
   onStageClick(event: KonvaEventObject<"click">) {
@@ -149,12 +214,12 @@ export class Canvas {
     //waypoint mode
     if (this.component.getSelectedMode() == "Waypoint") {
       console.log("Waypoint added");
-      this.waypoints.push(new Waypoint(this.transform(null).x, this.transform(null).y, this.component, this));
-      this.wpLayer.add(this.waypoints[this.waypoints.length - 1].getShape());
-      this.wpLayer.draw();
+      let waypoint: Waypoint = new Waypoint(this.transform(null).x, this.transform(null).y);
+      this.waypointService.addWaypoint(waypoint);
+      this.updateWaypoints();
     }
 
-    //label mode
+    //inspector mode
     if (this.component.getSelectedMode() == "Inspector") {
       this.component.setStageX(this.stage.getPointerPosition().x);
       this.component.setStageY(this.stage.getPointerPosition().y);
@@ -180,11 +245,11 @@ export class Canvas {
     this.newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
     //limit zoom to reasonable values
-    if(this.newScale < 0.1) {
+    if (this.newScale < 0.1) {
       this.newScale = 0.1;
     }
 
-    if(this.newScale > 30) {
+    if (this.newScale > 30) {
       this.newScale = 30;
     }
 
@@ -219,7 +284,7 @@ export class Canvas {
           strokeWidth: 2,
           lineCap: "round"
         }));
-        this.pathLayer.draw();
+        this.pathLayer.batchDraw();
       }
     }
   }
@@ -247,16 +312,22 @@ export class Canvas {
 
   drawPathes() {
     this.pathLayer.destroyChildren();
-    for (let i = 0; i < this.waypoints.length; i++) {
-      for (let j = 0; j < this.waypoints[i].connectedTo.length; j++) {
+
+    this.waypointService.getWaypoints().forEach(outerWaypoint => {
+      outerWaypoint.connectedTo.forEach(innerWaypoint => {
         this.pathLayer.add(new Konva.Line({
-          points: [this.waypoints[i].getX(), this.waypoints[i].getY(), this.waypoints[i].connectedTo[j].getX(), this.waypoints[i].connectedTo[j].getY()],
+          points: [
+            this.transform({ x: outerWaypoint.getX() + this.stage.getTransform().getMatrix()[4], y: 0 }).x * this.newScale,
+            this.transform({ x: 0, y: outerWaypoint.getY() + this.stage.getTransform().getMatrix()[5] }).y * this.newScale,
+            this.transform({ x: innerWaypoint.getX() + this.stage.getTransform().getMatrix()[4], y: 0 }).x * this.newScale,
+            this.transform({ x: 0, y: innerWaypoint.getY() + this.stage.getTransform().getMatrix()[5] }).y * this.newScale,
+          ],
           stroke: "black",
           strokeWidth: 2,
           lineCap: "round"
         }))
-      }
-    }
+      });
+    });
     this.pathLayer.draw();
   }
 

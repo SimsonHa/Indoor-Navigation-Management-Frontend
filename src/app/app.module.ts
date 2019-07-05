@@ -12,8 +12,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
-import {MatRadioModule} from '@angular/material/radio';
+import { MatRadioModule } from '@angular/material/radio';
 import { LabelService } from './label.service';
+import { WaypointService } from './waypoint.service';
+import { HttpClientModule } from '@angular/common/http';
 // import { Konva } from './konva';
 
 @NgModule({
@@ -32,10 +34,12 @@ import { LabelService } from './label.service';
     MaterialModule,
     FlexLayoutModule,
     FormsModule,
-    MatRadioModule
+    MatRadioModule,
+    HttpClientModule
   ],
   providers: [
-    LabelService
+    LabelService,
+    WaypointService
   ],
   bootstrap: [AppComponent],
   entryComponents: [ProductDetailComponent, LabelDetailComponent]

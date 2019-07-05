@@ -4,19 +4,61 @@
 }
 
 .radio-group {
+  position: absolute;
   display: flex;
-  flex-direction: column;
   margin: 15px 0;
 }
 
 .radio-button {
   margin: 5px;
+  margin-top: -2px;
+  vertical-align: middle
+}
+
+.canvas-container {
+  position: absolute;
+  height: 80vh;
+  width: 97%;
 }
 
 #container {
   border-style: solid;
   border-width: thin;
-  height: 65vh;
+  height: 100%;
   width: 100%;
   overflow: hidden;
+}
+
+#waypoint-save {
+  position: absolute;
+  margin-top: 3px;
+  right: 3%;
+}
+
+.top {
+  position: absolute;
+}
+
+.box {
+  position: absolute;
+  top: 85%;
+  bottom: 3%;
+  width: 90%;
+  padding: 2%;
+  background-color: rgba(192, 192, 192, 0.9);
+  border-radius: 15px;
+  left: 3%;
+  font-size: 15px;
+}
+
+.box-info {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  width: 20%;
+  padding: 2%;
+  padding-top: 1%;
+  background-color: rgba(192, 192, 192, 0.9);
+  border-radius: 15px;
+  font-size: 15px;
 }

@@ -2,60 +2,48 @@
   <mat-card-header>
     <mat-card-title>Visual Editor</mat-card-title>
     <!-- <mat-card-subtitle>Interactive waypoint & label placement</mat-card-subtitle> -->
-    <br>
+    <!-- <br> -->
   </mat-card-header>
-  <div class="bar" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-betwwen">
-    <div fxFlex="25%">
-      <label id="radio-group-label">Editor mode: </label>
-      <mat-radio-group aria-labelledby="radio-group-label" class="radio-group" [(ngModel)]="selectedMode" (change)="onModeChange(event)">
-        <mat-radio-button class="radio-button" *ngFor="let mode of modes" [value]="mode">
-          {{ mode }}
-        </mat-radio-button>
-      </mat-radio-group>
-    </div>
-    <div fxFlex="25%">
-      <div *ngIf="activeLabel">
-      <label id="radio-group-label">Label Info: </label>
-      <br><br>
-        <label>Product: {{ activeLabel.getProduct().getName() }}</label><br>
-        <label>Category: {{ activeLabel.getProduct().getCategory() }}</label><br>
-        <label>Label Mac: {{ activeLabel.getMac() }}</label><br>
-        <!-- <label>Label Saved X: {{ activeLabel.getX() }}</label><br>
-        <label>Label Saved Y: {{ activeLabel.getY() }}</label><br> -->
-        <!-- <label>Transform:
-        <div *ngIf="transform">
-          [
-          <div *ngFor="let number of activeLabel.getTransform().getMatrix()">
-            {{ number }},
-          </div>
-          ]
-        </div>
-        </label> -->
-      </div>
-    </div>
-
-    <div fxFlex="50%">
-      <div *ngIf="selectedMode == 'Inspector'">
-        <label id="radio-group-label">Transform/Mouse Info: </label>
-        <br><br>
-        <label>Mouse Stage X: {{ stageX }}</label><br>
-        <label>Mouse Stage Y: {{ stageY }} </label><br>
-        <label>Stage Transformed X: {{ stageTransformedX }}</label><br>
-        <label>Stage Transformed Y: {{ stageTransformedY }}</label><br>
-        <label>Zoom: {{ stageZoom }}</label><br>
-        <!-- <label>Transform:
-      <div *ngIf="transform">
-        [
-        <div *ngFor="let number of transform">
-          {{ number }},
-        </div>
-        ]
-      </div>
-      </label> -->
-      </div>
-    </div>
-  </div>
   <mat-card-content class="mat-card-content">
-    <div id="container"></div>
+    <div class="canvas-container">
+      <div id="container"></div>
+      <div *ngIf="activeLabel">
+        <div class="box-info">
+          <label id="radio-group-label">
+            <h3>Label Info: </h3>
+          </label>
+          <label><b>Product:</b> {{ activeLabel.getProduct().getName() }} </label><br>
+          <label><b>Price: </b> {{ activeLabel.getProduct().price }} </label><br>
+          <label><b>ArtNr: </b> {{ activeLabel.getProduct().artNr }} </label><br>
+          <label><b>Category: </b> {{ activeLabel.getProduct().category }} </label><br>
+          <br>
+          <label><b>Label Mac: </b> {{ activeLabel.getMac() }} </label><br>
+          <label><b>Position X: </b> {{ activeLabel.getX() }} </label><br>
+          <label><b>Position Y: </b> {{ activeLabel.getY() }} </label>
+        </div>
+      </div>
+      <div class="box">
+        <div class="top" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center">
+          <div fxFlex="50%">
+            <mat-radio-group aria-labelledby="radio-group-label" class="radio-group" [(ngModel)]="selectedMode" (change)="onModeChange(event)">
+              <label><b>Mode: </b></label>
+              <mat-radio-button class="radio-button" *ngFor="let mode of modes" [value]="mode">
+                {{ mode }}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <!-- <div *ngIf="selectedMode == 'Inspector'">
+              <label id="radio-group-label">Transform/Mouse Info: </label>
+              <br><br>
+              <label>Mouse Stage X: {{ stageX }}</label><br>
+              <label>Mouse Stage Y: {{ stageY }} </label><br>
+              <label>Stage Transformed X: {{ stageTransformedX }}</label><br>
+              <label>Stage Transformed Y: {{ stageTransformedY }}</label><br>
+              <label>Zoom: {{ stageZoom }}</label><br>
+            </div> -->
+        </div>
+        <button class="top" id="waypoint-save" align="right" mat-raised-button color="primary" (click)="saveWaypoints()">Save Waypoints</button>
+      </div>
+    </div>
   </mat-card-content>
 </mat-card>

@@ -11,8 +11,6 @@ import { LabelDetailComponent } from '../label-detail/label-detail.component';
 })
 export class LabelsComponent implements OnInit {
 
-  labels: Label[];
-
   constructor(private labelService: LabelService, public labelDialog: MatDialog) { }
 
   ngOnInit() {
@@ -20,7 +18,7 @@ export class LabelsComponent implements OnInit {
   }
 
   getLabels(): void {
-    this.labelService.getLabels().subscribe(labels => this.labels = labels);
+    this.labelService.getLabels();
   }
 
   openDialog(label: Label): void {
