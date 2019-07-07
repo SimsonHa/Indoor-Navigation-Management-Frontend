@@ -19,7 +19,7 @@ export class LabelService {
 
   private canvas: Canvas;
 
-  setCanvas(canvas : Canvas) {
+  setCanvas(canvas: Canvas) {
     this.canvas = canvas;
   }
 
@@ -43,35 +43,42 @@ export class LabelService {
 
       //remove already connected pis
       this.http.get<JSON>("http://localhost:8080/esl", this.httpOptions).subscribe(eslSon => {
-        let importEsl: Esl[] = JSON.parse(JSON.stringify(eslSon))
+        let importEsl: Esl[] = JSON.parse(JSON.stringify(eslSon));
 
-        let final : Label[] = [];
+        let final: Label[] = [];
 
         importLabels.forEach(iL => {
-          let found : boolean = false;
+          let found: boolean = false;
           importEsl.forEach(iE => {
-            if(iL.macAdres == iE.pi.macAdres) {
+            if (iL.macAdres == iE.pi.macAdres) {
               found = true;
             }
           });
-            if(!found) {
-              final.push(new Label(iL.macAdres, undefined, undefined));
-            }
+          if (!found) {
+            final.push(new Label(iL.macAdres, undefined, undefined));
+          }
         });
+
+        this.esls = [];
         importEsl.forEach(esl => {
           this.esls.push(new Label(esl.pi.macAdres, esl.posX, esl.posY));
+          this.esls[this.esls.length - 1].artikel = esl.artikel;
         });
 
         this.labels = final;
-        console.log(this.labels);
+
+        // console.log(this.labels);
         this.evaluateAvailable();
-        this.canvas.updateLabels();
+        try {
+          this.canvas.updateLabels();
+        } catch (e) {
+          //not registeres yet -ignored
+         };
       });
     });
   }
 
   getPrioLabel(): Observable<Label> {
-    this.getLabels();
     return of(this.labels.filter(label => label.artikel === null)[0]);
   }
 

@@ -37,6 +37,8 @@ export class ProductService {
       this.products = [];
       importProducts.forEach(iP => {
         this.products.push(new Product(iP.id, iP.name, iP.preis, iP.artNr, iP.kategorie.name));
+        console.log(":.................")
+        console.log(this.products[this.products.length -1]);
       });
     });
     return of(this.products);

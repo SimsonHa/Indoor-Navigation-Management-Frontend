@@ -8,19 +8,19 @@
     <div class="canvas-container">
       <div id="container"></div>
       <div *ngIf="activeLabel">
-        <div class="box-info">
-          <label id="radio-group-label">
-            <h3>Label Info: </h3>
-          </label>
-          <label><b>Product:</b> {{ activeLabel.getProduct().getName() }} </label><br>
-          <label><b>Price: </b> {{ activeLabel.getProduct().price }} </label><br>
-          <label><b>ArtNr: </b> {{ activeLabel.getProduct().artNr }} </label><br>
-          <label><b>Category: </b> {{ activeLabel.getProduct().category }} </label><br>
-          <br>
-          <label><b>Label Mac: </b> {{ activeLabel.getMac() }} </label><br>
-          <label><b>Position X: </b> {{ activeLabel.getX() }} </label><br>
-          <label><b>Position Y: </b> {{ activeLabel.getY() }} </label>
-        </div>
+          <div class="box-info">
+            <label id="radio-group-label">
+              <h3>Label Info: </h3>
+            </label>
+            <label><b>Product:</b> {{ activeLabel.artikel.name }} </label><br>
+            <label><b>Price: </b> {{ activeLabel.artikel.price }} </label><br>
+            <label><b>ArtNr: </b> {{ activeLabel.artikel.artNr }} </label><br>
+            <label><b>Category: </b> {{ activeLabel.artikel.category }} </label><br>
+            <br>
+            <label><b>Label Mac: </b> {{ activeLabel.getMac() }} </label><br>
+            <label><b>Position X: </b> {{ activeLabel.getX() }} </label><br>
+            <label><b>Position Y: </b> {{ activeLabel.getY() }} </label>
+          </div>
       </div>
       <div class="box">
         <div class="top" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center">

@@ -140,6 +140,7 @@ export class Canvas {
 
         // connect dropped product + label
         label.setProduct(this.productService.getDraggedLast());
+        this.component.setActiveLabel(label);
         // this.productService.getDraggedLast().setLabel(label);
         //save to backend
         //this.productService.saveProduct(this.productService.getDraggedLast());

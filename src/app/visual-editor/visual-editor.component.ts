@@ -58,6 +58,7 @@ export class VisualEditorComponent implements OnInit {
   }
 
   setActiveLabel(label: Label) {
+    console.log(label);
     this.activeLabel = label;
   }
 
