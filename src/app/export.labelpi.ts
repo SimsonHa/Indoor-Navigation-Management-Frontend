@@ -1,3 +1,5 @@
+//serveral helping interfaces for json parsing... bad style though
+
 export interface EKategorie {
   name: String;
 }

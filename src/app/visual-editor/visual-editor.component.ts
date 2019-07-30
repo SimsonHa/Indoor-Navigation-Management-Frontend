@@ -17,7 +17,7 @@ export class VisualEditorComponent implements OnInit {
 
   canvas: Canvas;
   selectedMode: string = "Waypoint";
-  modes: string[] = ["Waypoint", "Path", "Inspector"];
+  modes: string[] = ["Waypoint", "Path"];
 
   activeLabel: Label | null;
 
@@ -34,7 +34,7 @@ export class VisualEditorComponent implements OnInit {
   constructor(private productService: ProductService, private labelService: LabelService, private waypointService: WaypointService) { }
 
   ngOnInit(): void {
-    // upload picture here
+    // upload picture here later
     // create configStage
     // etc
     let img = new Image();

@@ -40,8 +40,4 @@ export class ProductsComponent implements OnInit {
   drag(event : DragEvent, product : Product) {
     this.productService.setDraggedLast(product);
   }
-
-  drop(event : DragEvent) {
-
-  }
 }

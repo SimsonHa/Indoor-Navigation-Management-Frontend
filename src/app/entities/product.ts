@@ -15,6 +15,7 @@ export class Product {
   }
 
   static generateId() : number {
+    //this is not save - generate ID in DB in next Version
     return Product.productCount++;
   }
 
@@ -29,22 +30,4 @@ export class Product {
   getCategory() : String {
     return this.category;
   }
-
-  // toJson() : String {
-  //   //return JSON.Stringify(this);
-  //   var cache = [];
-  //   let json : String = JSON.stringify(this, function(key, value) {
-  //       if (typeof value === 'object' && value !== null) {
-  //           if (cache.indexOf(value) !== -1) {
-  //               // Duplicate reference found, discard key
-  //               return;
-  //           }
-  //           // Store value in our collection
-  //           cache.push(value);
-  //       }
-  //       return value;
-  //   });
-  //   cache = null; // Enable garbage collection
-  //   return json;
-  // }
 }

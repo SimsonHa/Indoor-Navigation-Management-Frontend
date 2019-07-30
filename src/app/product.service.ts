@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Product } from './entities/product';
-import { LabelService } from './label.service';
 import { Observable, of } from 'rxjs';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 
@@ -9,17 +8,10 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 })
 export class ProductService {
 
+  //for drag and drop impl
   draggedLast: Product = null;
 
-  //mock daten
-  products: Product[] = []
-  //   new Product(Product.generateId(), "Apfel", 1.29, "34r34rgf5erz", "Obst"),
-  //   new Product("Birne", 0.55, "35r34rgf5erz", "Obst"),
-  //   new Product("Tomate", 0.99, "36r34rgf5erz", "Gemüse"),
-  //   new Product("Kartoffeln", 2.29, "37r34rgf5erz", "Gemüse"),
-  //   new Product("Spülmittel", 3.29, "34834rgf5erz", "Haushaltswaren"),
-  //   new Product("Lappen", 1.89, "36534rgf5erz", "Haushaltswaren"),
-  // ]
+  products: Product[] = [];
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -28,7 +20,7 @@ export class ProductService {
     })
   };
 
-  constructor(private labelService: LabelService, private http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
   getProducts(): Observable<Product[]> {
     this.http.get<JSON>("http://localhost:8080/artikel", this.httpOptions).subscribe(text => {
@@ -37,8 +29,6 @@ export class ProductService {
       this.products = [];
       importProducts.forEach(iP => {
         this.products.push(new Product(iP.id, iP.name, iP.preis, iP.artNr, iP.kategorie.name));
-        console.log(":.................")
-        console.log(this.products[this.products.length -1]);
       });
     });
     return of(this.products);
@@ -49,13 +39,9 @@ export class ProductService {
   }
 
   saveProduct(product: Product) {
-    //push product to DB here
-    // this.products.push(product);
     this.http.post<String>("http://localhost:8080/newArtikel", this.stringifyProduct(product), this.httpOptions).subscribe(art => {
       this.getProducts();
     });
-  // console.log(this.stringifyProduct(product));
-  // console.log(JSON.stringify(product));
 }
 
 setDraggedLast(product : Product) {
@@ -66,6 +52,7 @@ getDraggedLast() : Product {
   return this.draggedLast;
 }
 
+//again poorly done json parsing
 stringifyProduct(product : Product) : String {
   let json: String = JSON.stringify(product);
   json = json.replace("price", "preis");

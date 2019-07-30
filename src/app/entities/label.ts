@@ -1,18 +1,14 @@
 import { Product } from './product';
 
 export class Label {
-  //id: number;
   macAdres: String; //[sic]
   posX: number;
   posY: number;
   artikel: Product = null;
-  // transform : Transform = null;
 
   static labelCount = 0;
 
   constructor(mac : String, x : number, y : number) {
-    //set id later in DB
-    //this.id = Label.labelCount++;
     this.macAdres = mac;
     this.posX = x;
     this.posY = y;

@@ -17,9 +17,7 @@ export class WaypointService {
     })
   };
 
-  constructor(private http: HttpClient) {
-
-  }
+  constructor(private http: HttpClient) {}
 
   reloadWaypoints() {
     this.http.get<JSON>("http://localhost:8080/getNetz", this.httpOptions).subscribe(text => {
@@ -40,11 +38,10 @@ export class WaypointService {
 
   saveWaypoints() {
     this.http.post<String>("http://localhost:8080/netz", this.stringifyWaypoints(), this.httpOptions).subscribe();
-    //this.reloadWaypoints();
   }
 
+  //json mapping
   stringifyWaypoints(): String {
-
     let exportWaypoints: ExportWaypoint[] = [];
 
     this.waypoints.forEach(waypoint => {
@@ -61,21 +58,15 @@ export class WaypointService {
       });
       exportWaypoints.push(wp);
     });
-    // console.log("---------------------------------------");
-    // console.log("JSON TO BACKEND");
-    // console.log("{\"wrapperNetzArr\":" + JSON.stringify(exportWaypoints) + "}");
-    // console.log("---------------------------------------");
     return "{\"wrapperNetzArr\":" + JSON.stringify(exportWaypoints) + "}";
   }
 
+  //json mapping
   deserialize(json: JSON) {
-    // console.log("---------------------------------------");
-    // console.log("JSON FROM BACKEND");
-    // console.log(JSON.stringify(json));
-    // console.log("---------------------------------------");
     let exportWaypoints: ExportWaypoint[] = JSON.parse(JSON.stringify(json));
     let tempWaypoints: Waypoint[] = [];
 
+    // a lot of mapping to prevent circular jsons
     //map exportWP to internWP
     exportWaypoints.forEach(wp => {
       tempWaypoints.push(new Waypoint(wp.x, wp.y));
@@ -92,11 +83,6 @@ export class WaypointService {
         }
       }
     }
-
-    // console.log("---------------------------------------");
-    // console.log("AFTER MAPPING");
-    // console.log(tempWaypoints);
-    // console.log("---------------------------------------");
     this.waypoints = tempWaypoints;
     this.canvas.updateWaypoints();
     this.canvas.drawPathes();

@@ -19,9 +19,6 @@ export class Canvas {
   lblLayer: Konva.Layer; // labels
   liveLayer: Konva.Layer; // live previews
 
-  //canvas elements (wp, lbl, pathes)
-  // waypoints: Waypoint[] = [];
-  // labels: Konva.Rect[] = [];
   pathes: Konva.Line[] = [];
 
   //others
@@ -31,7 +28,7 @@ export class Canvas {
 
   private newScale: number = 1;
 
-
+  //injecting all services and needed components from parent class
   constructor(img: HTMLImageElement, private component: VisualEditorComponent, private labelService: LabelService, private productService: ProductService, private visualEditor: VisualEditorComponent, private waypointService: WaypointService) {
 
     //stage
@@ -42,6 +39,7 @@ export class Canvas {
       draggable: true
     });
 
+    //basic controls
     this.stage.on("click", event => this.onStageClick(event));
     this.stage.on("wheel", event => this.onStageZoom(event));
     this.stage.on("mousemove", event => this.onMouseMove(event));
@@ -73,6 +71,7 @@ export class Canvas {
     //draw
     this.stage.draw();
 
+    //drag and drop from outside
     var con = this.stage.container();
 
     con.addEventListener('dragover', e => {
@@ -84,13 +83,6 @@ export class Canvas {
       this.onDrop(e);
       this.updateLabels();
     });
-
-    //test
-    // console.log(this.labelService);
-    // console.log(this.productService);
-
-
-
   }
 
   // rerenders all labeles connetected to a product
@@ -98,7 +90,7 @@ export class Canvas {
     this.lblLayer.removeChildren();
 
     this.labelService.esls.forEach(label => {
-
+      //visual representation for each label
       let rect = new Konva.Rect({
         x: this.transform({ x: label.getX() + this.stage.getTransform().getMatrix()[4], y: 0 }).x * this.newScale,
         y: this.transform({ x: 0, y: label.getY() + this.stage.getTransform().getMatrix()[5] }).y * this.newScale,
@@ -110,16 +102,16 @@ export class Canvas {
         draggable: true
       });
 
+      //show details while hovering over label
       rect.on("mouseenter", e => this.visualEditor.setActiveLabel(label));
       rect.on("mouseleave", e => this.visualEditor.removeActiveLabel());
       rect.on("dragend", e => {
-        //update label position on dragging
+        //update label position on dragend
         label.setX(rect.getPosition().x);
         label.setY(rect.getPosition().y);
       });
-
+      //adding and drawing shapes
       this.lblLayer.add(rect);
-
       this.lblLayer.draw();
     });
   }
@@ -133,25 +125,24 @@ export class Canvas {
         console.log("Dropped Label: ");
         console.log(label);
 
+        //getting coordinates + transforming them
         this.stage.setPointersPositions(e);
-        //label.setTransform(this.stage.getAbsoluteTransform().copy());
         label.setX(this.transform(null).x);
         label.setY(this.transform(null).y);
 
-        // connect dropped product + label
+        // connect dropped product + label and push to db
         label.setProduct(this.productService.getDraggedLast());
         this.component.setActiveLabel(label);
-        // this.productService.getDraggedLast().setLabel(label);
-        //save to backend
-        //this.productService.saveProduct(this.productService.getDraggedLast());
         this.labelService.saveLabel(label);
 
       } else {
+        //if no connectable labels are available
         alert("Keine Labels verfügbar");
       }
-    }); //implement exceptions/error (e.g. "no labels available here")
+    });
   }
 
+  //updating Waypoints including interaction (e.g. drag) behaviour
   updateWaypoints() {
     this.wpLayer.removeChildren();
     this.waypointService.getWaypoints().forEach(waypoint => {
@@ -167,30 +158,34 @@ export class Canvas {
 
       this.wpLayer.add(shape);
 
+      //connection to shapes with a path
       shape.on("click", e => {
-        console.log("shape clicked");
         e.cancelBubble = true;
-        if (this.component.getSelectedMode() == "Path") { //path mode
+        if (this.component.getSelectedMode() == "Path") { //path mode neccessary
           if (this.getLastSelected()) { //there is a predecessor selected
-            if (this.getLastSelected().id != waypoint.id) { // not itself
-              if (!waypoint.connectedTo.includes(this.getLastSelected())) { //not already connected
+            if (this.getLastSelected().id != waypoint.id) { // predecessor is not itself
+              if (!waypoint.connectedTo.includes(this.getLastSelected())) { // both are not already connected
+                //after all checks finally make the connection
                 waypoint.connectedTo.push(this.getLastSelected());
                 this.getLastSelected().addConnection(waypoint);
                 console.log("Connected ID: " + waypoint.id + " with ID " + this.getLastSelected().id);
               }
             }
           }
+          //update last selected and redraw pathes
           this.setLastSelected(waypoint);
           this.drawPathes();
         }
       });
-      //
+
+      //update coordinates on drag (this time not on drag end to correctly render the pathes live while dragging)
       shape.on("dragmove", e => {
         waypoint.setX(this.transform(null).x);
         waypoint.setY(this.transform(null).y);
         this.drawPathes();
       });
-      //
+
+      //increase size on hover to make connecting waypoints easier
       shape.on("mouseenter", e => {
         shape.size({
           width: 16,
@@ -198,7 +193,8 @@ export class Canvas {
         })
         this.wpLayer.draw();
       });
-      //
+
+      //.. and back to normal size
       shape.on("mouseout", e => {
         shape.size({
           width: 8,
@@ -210,6 +206,7 @@ export class Canvas {
     this.wpLayer.draw();
   }
 
+  //adding waypoints when in mode "Waypoint"
   onStageClick(event: KonvaEventObject<"click">) {
     //click multiplexer
     //waypoint mode
@@ -219,19 +216,9 @@ export class Canvas {
       this.waypointService.addWaypoint(waypoint);
       this.updateWaypoints();
     }
-
-    //inspector mode
-    if (this.component.getSelectedMode() == "Inspector") {
-      this.component.setStageX(this.stage.getPointerPosition().x);
-      this.component.setStageY(this.stage.getPointerPosition().y);
-
-      this.component.setStageTransformedX(this.transform(null).x);
-      this.component.setStageTransformedY(this.transform(null).y);
-
-      this.component.setTrans(this.stage.getTransform());
-    }
   }
 
+  //zoomin on mousewheel
   onStageZoom(e) {
     let scaleBy = 1.2;
 
@@ -269,11 +256,13 @@ export class Canvas {
         -(mousePointTo.y - this.stage.getPointerPosition().y / this.newScale) *
         this.newScale
     };
+    //redraw and persist transform
     this.stage.position(newPos);
     this.stage.batchDraw();
     this.component.setTrans(this.stage.getTransform());
   }
 
+  //live preview in mode "Path"
   onMouseMove(event: KonvaEventObject<"mousemove">): void {
     //in path mode, show preview lineCap
     if (this.component.getSelectedMode() === "Path") {
@@ -291,7 +280,7 @@ export class Canvas {
   }
 
   //null parameter returns current pointer pos
-  //(transform relative coordinates changed by zoom etc)
+  //(transform relative coordinates changed by zoom, drag etc)
   transform(pos: Point): Point {
     let transform = this.stage.getAbsoluteTransform().copy().invert();
 
@@ -303,14 +292,7 @@ export class Canvas {
     }
   }
 
-  getLastSelected(): Waypoint {
-    return this.lastSelected;
-  }
-
-  setLastSelected(waypoint: Waypoint) {
-    this.lastSelected = waypoint;
-  }
-
+  //drawing pathes beetwen all connected waypoints
   drawPathes() {
     this.pathLayer.destroyChildren();
 
@@ -318,6 +300,7 @@ export class Canvas {
       outerWaypoint.connectedTo.forEach(innerWaypoint => {
         this.pathLayer.add(new Konva.Line({
           points: [
+            // important transformation for reloaded points with lost transformation context
             this.transform({ x: outerWaypoint.getX() + this.stage.getTransform().getMatrix()[4], y: 0 }).x * this.newScale,
             this.transform({ x: 0, y: outerWaypoint.getY() + this.stage.getTransform().getMatrix()[5] }).y * this.newScale,
             this.transform({ x: innerWaypoint.getX() + this.stage.getTransform().getMatrix()[4], y: 0 }).x * this.newScale,
@@ -332,9 +315,17 @@ export class Canvas {
     this.pathLayer.draw();
   }
 
-  //do some resetting
+  //reset preview line but draw pathes between connected labels
   onModeChange() {
     this.drawPathes();
     this.lastSelected = null;
+  }
+
+  getLastSelected(): Waypoint {
+    return this.lastSelected;
+  }
+
+  setLastSelected(waypoint: Waypoint) {
+    this.lastSelected = waypoint;
   }
 }

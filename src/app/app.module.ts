@@ -6,7 +6,6 @@ import { VisualEditorComponent } from './visual-editor/visual-editor.component';
 import { ProductsComponent } from './products/products.component';
 import { LabelsComponent } from './labels/labels.component';
 import { ProductDetailComponent } from './product-detail/product-detail.component';
-import { LabelDetailComponent } from './label-detail/label-detail.component';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material';
@@ -16,7 +15,6 @@ import { MatRadioModule } from '@angular/material/radio';
 import { LabelService } from './label.service';
 import { WaypointService } from './waypoint.service';
 import { HttpClientModule } from '@angular/common/http';
-// import { Konva } from './konva';
 
 @NgModule({
   declarations: [
@@ -24,8 +22,7 @@ import { HttpClientModule } from '@angular/common/http';
     VisualEditorComponent,
     ProductsComponent,
     LabelsComponent,
-    ProductDetailComponent,
-    LabelDetailComponent
+    ProductDetailComponent
   ],
   imports: [
     BrowserModule,
@@ -42,6 +39,6 @@ import { HttpClientModule } from '@angular/common/http';
     WaypointService
   ],
   bootstrap: [AppComponent],
-  entryComponents: [ProductDetailComponent, LabelDetailComponent]
+  entryComponents: [ProductDetailComponent]
 })
 export class AppModule { }

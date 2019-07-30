@@ -6,9 +6,6 @@ import { Esl } from './import.esl';
 import { EKategorie, EArtikel, ELabel, ELabelWrapper } from './export.labelpi';
 import { Canvas } from './visual-editor/visual.canvas';
 
-// @Injectable({
-//   providedIn: 'root'
-// })
 @Injectable()
 export class LabelService {
 
@@ -47,6 +44,7 @@ export class LabelService {
 
         let final: Label[] = [];
 
+        //filter connected pis out
         importLabels.forEach(iL => {
           let found: boolean = false;
           importEsl.forEach(iE => {
@@ -67,7 +65,6 @@ export class LabelService {
 
         this.labels = final;
 
-        // console.log(this.labels);
         this.evaluateAvailable();
         try {
           this.canvas.updateLabels();
@@ -78,26 +75,24 @@ export class LabelService {
     });
   }
 
+  //return first label which is not connected
   getPrioLabel(): Observable<Label> {
     return of(this.labels.filter(label => label.artikel === null)[0]);
   }
 
-  // getConnectedLabels(): Observable<Label[]> {
-  //   // return of(this.labels.filter(label => label.artikel != null));
-  //   return of(this.labels);
-  // }
-
+  //check how many labels are available (for preview in tab title)
   evaluateAvailable() {
     this.availableLabels = this.labels.length;
   }
 
+  //save label after connection to article is made with a drop in the editor
   saveLabel(label: Label) {
     this.http.post<String>("http://localhost:8080/piConnect", this.stringifyLabel(label), this.httpOptions).subscribe(done => {
       this.getLabels();
-    });
-
+    }); //handling errors here later
   }
 
+  // json parsing... not great
   stringifyLabel(label: Label) {
     let kat: EKategorie = { name: label.artikel.category };
     let artikel: EArtikel = {
@@ -122,43 +117,3 @@ export class LabelService {
     return JSON.stringify(wrapper);
   }
 }
-
-// {
-//   "artikel":
-//     {
-//       "id":2,
-//       "name":"Spülmittel",
-//       "preis":3.90,
-//       "artNr":"34834rgf5erz",
-//       "kategorie":
-//         {
-//           "name": "Haushaltswaren"
-//         }
-//     },
-//     "label":
-//       {
-//         "mac":"000000003d1d1c21",
-//         "x":560,
-//         "y": 240
-//       }
-// }
-
-
-// let len = importLabels.length;
-// for (let i = len -1; i >= 0; --i) {
-  //   // console.log(importLabels);
-  //   // console.log("index: " + i);
-  //   console.log(importLabels);
-  //   console.log(importEsl);
-  //
-  //   importEsl.forEach(esl => {
-    //     console.log("if(" + importLabels[i].macAdres + " == " + esl.pi.macAdres + ") ==>" + (importLabels[i].macAdres == esl.pi.macAdres));
-    //     if (importLabels[i].macAdres == esl.pi.macAdres) {
-      //       const index = importLabels.indexOf(importLabels[i], 0);
-      //       if (index > -1) {
-        //         importLabels.splice(index, 1);
-        //         console.log("Removed index: " + index);
-        //       }
-        //     }
-        //   });
-        // }

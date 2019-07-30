@@ -6,14 +6,15 @@ export class Waypoint {
   x: number;
   y: number;
   connectedTo: Waypoint[] = [];
+  //latest set waypoint is always the end.. therefore this could be preinitalised
   status: String = "ende";
-  // transform: Transform = null;
 
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
     this.id = Waypoint.waypointCounter++;
 
+    //if it is the first one, its rather start then end...
     if (this.id == 0) {
       this.status = "anfang";
     }
